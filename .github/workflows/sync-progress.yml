@@ -1,0 +1,33 @@
+name: Sync progress
+
+on:
+  workflow_dispatch:
+    inputs:
+      payload:
+        description: '網頁上「匯出進度」複製的 JSON'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Merge progress into data/progress.md
+        # payload 走 env 傳入，不可內插進 shell — script injection 破口，
+        # 且 JSON 內的引號會直接讓指令語法錯誤
+        env:
+          PAYLOAD: ${{ inputs.payload }}
+        run: node tools/write-progress.mjs
+      - name: Commit
+        run: |
+          git config user.name  "progress-bot"
+          git config user.email "progress-bot@users.noreply.github.com"
+          git add data/progress.md
+          git diff --staged --quiet || git commit -m "chore: sync progress"
+          git push

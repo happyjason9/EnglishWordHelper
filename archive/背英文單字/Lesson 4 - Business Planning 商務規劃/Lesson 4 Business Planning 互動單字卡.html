@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#17242C">
+<title>商務規劃字彙記憶卡</title>
+<style>
+:root{
+  --ink:#17242C;
+  --ink-soft:#24343E;
+  --paper:#F4F1E8;
+  --paper-edge:#DCD7C7;
+  --rule:#C7C1AE;
+  --seal:#A8382C;
+  --text:#1E2C34;
+  --muted:#6E7C83;
+  --serif: Georgia,"Iowan Old Style","Songti TC","Noto Serif CJK TC","Source Han Serif TC",serif;
+  --sans: -apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:var(--ink);
+  color:var(--paper);
+  font-family:var(--sans);
+  display:flex;flex-direction:column;
+  padding:env(safe-area-inset-top) 14px calc(env(safe-area-inset-bottom) + 10px);
+  overscroll-behavior:none;
+}
+header{
+  display:flex;align-items:baseline;justify-content:space-between;
+  padding:16px 4px 10px;
+}
+h1{font-family:var(--serif);font-size:16px;font-weight:400;letter-spacing:.06em;color:#B9C4C9}
+#count{font-family:var(--serif);font-size:15px;color:#8A979E;font-variant-numeric:tabular-nums}
+#ticks{display:flex;gap:3px;padding:0 4px 12px}
+#ticks i{height:2px;flex:1;background:#31424C;border-radius:1px;transition:background .25s}
+#ticks i.done{background:var(--seal)}
+#ticks i.now{background:#B9C4C9}
+#stage{flex:1;display:flex;min-height:0}
+.card{
+  flex:1;position:relative;overflow-y:auto;overscroll-behavior:contain;
+  background:var(--paper);color:var(--text);
+  border:1px solid var(--paper-edge);
+  border-radius:3px;
+  box-shadow:0 12px 28px rgba(0,0,0,.35);
+  padding:26px 22px 26px 58px;
+  cursor:pointer;
+}
+.card::before{
+  content:"";position:absolute;top:0;bottom:0;left:44px;
+  width:1px;background:var(--seal);opacity:.35;
+}
+.num{
+  position:absolute;left:0;top:26px;width:44px;text-align:center;
+  font-family:var(--serif);font-size:15px;color:var(--muted);
+  font-variant-numeric:tabular-nums;
+}
+.word{font-family:var(--serif);font-size:38px;line-height:1.12;letter-spacing:-.01em}
+.pos{font-family:var(--serif);font-style:italic;font-size:17px;color:var(--muted);margin-top:6px}
+.tapcue{margin-top:26px;font-size:13px;color:var(--muted)}
+.answer{margin-top:20px}
+.zh{font-family:var(--serif);font-size:24px;line-height:1.5;letter-spacing:.02em}
+.hr{height:1px;background:var(--rule);margin:20px 0 16px;opacity:.7}
+.ex{display:flex;gap:10px;margin-bottom:14px}
+.ex .mk{font-family:var(--serif);font-style:italic;color:var(--muted);font-size:16px;line-height:1.55}
+.ex .en{font-family:var(--serif);font-size:17.5px;line-height:1.55;max-width:64ch}
+.ex .tr{font-size:14.5px;line-height:1.7;color:#4C5B63;margin-top:4px;display:none}
+.card.showtr .ex .tr{display:block}
+.note{font-size:14px;line-height:1.75;color:#4C5B63}
+.note b{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--text)}
+.note div+div{margin-top:5px}
+.stamp{
+  position:absolute;top:18px;right:16px;
+  width:62px;height:62px;border:2.5px solid var(--seal);border-radius:50%;
+  color:var(--seal);font-family:var(--serif);font-size:28px;
+  display:none;align-items:center;justify-content:center;
+  transform:rotate(-9deg);opacity:.8;
+}
+.card.known .stamp{display:flex;animation:press .32s cubic-bezier(.2,1.4,.4,1)}
+@keyframes press{from{transform:rotate(-9deg) scale(2.1);opacity:0}to{transform:rotate(-9deg) scale(1);opacity:.8}}
+.reveal{animation:unfold .22s ease-out}
+@keyframes unfold{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+#bar{display:flex;gap:8px;padding-top:12px}
+button{
+  font-family:var(--sans);font-size:15px;color:#CBD5D9;
+  background:var(--ink-soft);border:1px solid #35464F;border-radius:6px;
+  padding:15px 10px;flex:1;cursor:pointer;transition:background .15s;
+}
+button:active{background:#2E404A}
+button:focus-visible{outline:2px solid #7FA8B8;outline-offset:2px}
+#know{color:#F0D9D5;border-color:#57342F;background:#33221F}
+#know:active{background:#402A26}
+#util{display:flex;gap:8px;padding-top:8px}
+#util button{font-size:13px;padding:11px 8px;color:#8A979E;background:transparent;border-color:#2C3B44}
+#done{flex:1;display:none;flex-direction:column;justify-content:center;text-align:center;padding:0 10px}
+#done h2{font-family:var(--serif);font-size:30px;font-weight:400;margin-bottom:14px}
+#done p{color:#93A0A6;font-size:15px;line-height:1.9;margin-bottom:28px}
+#done .list{font-family:var(--serif);font-size:16px;color:#B9C4C9;line-height:1.9;margin-bottom:28px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>商務規劃字彙</h1>
+  <span id="count"></span>
+</header>
+<div id="ticks"></div>
+
+<div id="stage"><div class="card" id="card" tabindex="0" role="button" aria-label="輕觸看解答"></div></div>
+
+<div id="done">
+  <h2>這一輪完成</h2>
+  <p id="doneMsg"></p>
+  <div class="list" id="doneList"></div>
+  <div id="bar" style="display:flex">
+    <button id="again">重練待複習</button>
+    <button id="restart">全部重來</button>
+  </div>
+</div>
+
+<div id="bar">
+  <button id="prev" aria-label="上一張">← 上一張</button>
+  <button id="next">下一張 →</button>
+  <button id="know">記住了</button>
+</div>
+<div id="util">
+  <button id="trBtn">顯示中譯</button>
+  <button id="shufBtn">隨機順序</button>
+</div>
+
+<script>
+const DATA=[
+{n:1,w:"address",p:"n./v.",zh:"演說、地址;提出、處理",
+ ex:[["The board praised her address at the annual shareholders' meeting.","董事會讚賞她在年度股東會上的演說。"],
+     ["Our business plan directly addresses the needs of first-time buyers.","我們的商業計畫直接回應了首次購買者的需求。"]],
+ note:[["用法","動詞 address a problem/issue/need,即「處理、正視」某個問題,是商業計畫常考用法"]]},
+{n:2,w:"avoid",p:"v.",zh:"避免",
+ ex:[["To avoid cash-flow problems, the owner drew up a detailed budget.","為了避免現金流問題,老闆擬定了詳細的預算。"],
+     ["Many of these mistakes could have been avoided with a proper business plan.","這些錯誤大多本可靠著完善的商業計畫來避免。"]],
+ note:[["用法","avoid + V-ing(不接 to V)"]]},
+{n:3,w:"demonstrate",p:"v.",zh:"論證、說明、展現",
+ ex:[["The plan demonstrates a clear understanding of the target market.","這份計畫展現出對目標市場的清楚了解。"],
+     ["She demonstrated with sales figures that the strategy was working.","她用銷售數字證明這項策略是有效的。"]],
+ note:[["衍生","demonstration 展示、說明"]]},
+{n:4,w:"develop",p:"v.",zh:"發展、擴展",
+ ex:[["He developed his idea into a full business plan over six months.","他花了六個月把構想發展成完整的商業計畫。"],
+     ["The small shop has developed into a chain with twenty locations.","這家小店已發展成擁有二十間分店的連鎖店。"]],
+ note:[["衍生","development 發展;developer 開發者"]]},
+{n:5,w:"evaluate",p:"v.",zh:"評價、評估",
+ ex:[["Before expanding, the team evaluated the risks of entering a new market.","在擴張前,團隊評估了進入新市場的風險。"],
+     ["Lenders evaluate a company's credit history before approving a loan.","放款方在核准貸款前會評估公司的信用紀錄。"]],
+ note:[["衍生","evaluation 評估、評價"]]},
+{n:6,w:"gather",p:"v.",zh:"收集、召集;推測",
+ ex:[["We gathered market data from surveys, interviews, and public reports.","我們透過問卷、訪談和公開報告收集市場資料。"],
+     ["I gather that the new regulations will affect small businesses the most.","我推測新法規對小型企業影響最大。"]],
+ note:[["用法","I gather (that) 表示「我推測、聽說」,常出現在口語或報告開頭"]]},
+{n:7,w:"offer",p:"n./v.",zh:"出價、提議;提供、主動提出",
+ ex:[["She accepted the investor's offer to fund the second phase.","她接受了投資人資助第二階段的提議。"],
+     ["The plan must offer lenders solid evidence of future profitability.","這份計畫必須向放款方提出未來獲利的具體證據。"]],
+ note:[["用法","offer sb. sth;offer to V"]]},
+{n:8,w:"primarily",p:"adv.",zh:"首要地、最重要地",
+ ex:[["The proposal is primarily concerned with reducing operating costs.","這份提案主要著重在降低營運成本。"],
+     ["Investors are thinking primarily about long-term returns.","投資人主要考慮的是長期報酬。"]],
+ note:[["衍生","primary (adj.) 主要的、首要的"]]},
+{n:9,w:"risk",p:"n.",zh:"風險",
+ ex:[["The biggest risk for new businesses is running out of capital too early.","新創企業最大的風險是太早耗盡資金。"],
+     ["Entering an unfamiliar market always carries some risk.","進入陌生市場總是帶有一定的風險。"]],
+ note:[["片語","at risk 處於風險中;take a risk 冒險"]]},
+{n:10,w:"strategy",p:"n.",zh:"策略",
+ ex:[["A solid business plan lays out a clear strategy for growth.","完善的商業計畫會列出明確的成長策略。"],
+     ["The team is developing a strategy to enter the online market.","團隊正在擬定進軍網路市場的策略。"]],
+ note:[["衍生","strategic 策略性的;strategist 策略家"]]},
+{n:11,w:"strengthen",p:"v.",zh:"加強、使更強",
+ ex:[["Including market research can strengthen your business plan.","加入市場研究可以強化你的商業計畫。"],
+     ["The company strengthened its position by acquiring a smaller competitor.","該公司透過併購一家較小的競爭對手來鞏固地位。"]],
+ note:[["反義","weaken(削弱)"]]},
+{n:12,w:"substitution",p:"n.",zh:"代替、替換",
+ ex:[["The substitution of low-cost materials raised concerns about quality.","以低成本材料替換的做法引發了品質疑慮。"],
+     ["There is no substitution for thorough market research.","徹底的市場研究是無可取代的。"]],
+ note:[["衍生","substitute (v./n.) 替代、代替品"]]}
+];
+
+const card=document.getElementById('card'),stage=document.getElementById('stage'),
+      bar=document.getElementById('bar'),util=document.getElementById('util'),
+      done=document.getElementById('done'),ticks=document.getElementById('ticks'),
+      count=document.getElementById('count'),trBtn=document.getElementById('trBtn'),
+      shufBtn=document.getElementById('shufBtn');
+
+let queue=[],pos=0,flipped=false,showTr=false,shuffle=false,known=[],round=1;
+
+function start(list){queue=list.slice();pos=0;known=[];round=1;if(shuffle)mix();render()}
+function mix(){for(let i=queue.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[queue[i],queue[j]]=[queue[j],queue[i]]}}
+
+function render(){
+  if(!queue.length){return finish()}
+  if(pos>=queue.length){pos=0;round++;if(shuffle)mix()}
+  if(pos<0)pos=queue.length-1;
+  const c=queue[pos];flipped=false;
+  card.className='card'+(showTr?' showtr':'');
+  card.scrollTop=0;
+  card.innerHTML=`<div class="num">${String(c.n).padStart(2,'0')}</div>
+    <div class="word">${c.w}</div><div class="pos">${c.p}</div>
+    <div class="tapcue">輕觸卡片看解答</div>`;
+  count.textContent=`${pos+1} / ${queue.length}`+(round>1?`　第 ${round} 輪`:'');
+  drawTicks();
+  done.style.display='none';stage.style.display='flex';bar.style.display='flex';util.style.display='flex';
+}
+
+function flip(){
+  if(flipped||!queue.length)return;flipped=true;
+  const c=queue[pos];
+  const exs=c.ex.map((e,i)=>`<div class="ex"><span class="mk">${'ab'[i]}.</span><div>
+      <div class="en">${e[0]}</div><div class="tr">${e[1]}</div></div></div>`).join('');
+  const notes=c.note.map(n=>`<div><b>${n[0]}</b>　${n[1]}</div>`).join('');
+  card.insertAdjacentHTML('beforeend',
+    `<div class="answer reveal"><div class="zh">${c.zh}</div><div class="hr"></div>${exs}
+     <div class="hr"></div><div class="note">${notes}</div></div>
+     <div class="stamp">熟</div>`);
+  card.querySelector('.tapcue').remove();
+}
+
+function drawTicks(){
+  ticks.innerHTML='';
+  DATA.forEach(d=>{
+    const i=document.createElement('i');
+    if(known.includes(d))i.className='done';
+    else if(queue[pos]===d)i.className='now';
+    ticks.appendChild(i);
+  });
+}
+
+function finish(){
+  stage.style.display='none';bar.style.display='none';util.style.display='none';
+  done.style.display='flex';count.textContent=`${known.length} / ${DATA.length}`;
+  const left=DATA.filter(d=>!known.includes(d));
+  document.getElementById('doneMsg').textContent=
+    left.length?`記住 ${known.length} 個,還有 ${left.length} 個要再看。`:`12 個全部記住了。`;
+  document.getElementById('doneList').textContent=left.map(d=>d.w).join('、');
+  document.getElementById('again').style.display=left.length?'block':'none';
+  drawTicks();
+}
+
+card.addEventListener('click',flip);
+document.getElementById('next').onclick=()=>{pos++;render()};
+document.getElementById('prev').onclick=()=>{pos--;render()};
+document.getElementById('know').onclick=()=>{
+  if(!queue.length)return;
+  if(!flipped)flip();
+  const c=queue[pos];
+  if(!known.includes(c))known.push(c);
+  card.classList.add('known');
+  const stamp=card.querySelector('.stamp');if(stamp)stamp.style.display='flex';
+  drawTicks();
+  setTimeout(()=>{queue.splice(pos,1);queue.length?render():finish()},400);
+};
+trBtn.onclick=()=>{showTr=!showTr;card.classList.toggle('showtr',showTr);trBtn.textContent=showTr?'隱藏中譯':'顯示中譯'};
+shufBtn.onclick=()=>{shuffle=!shuffle;shufBtn.textContent=shuffle?'順序:隨機':'隨機順序';if(shuffle)mix();pos=0;render()};
+document.getElementById('again').onclick=()=>start(DATA.filter(d=>!known.includes(d)));
+document.getElementById('restart').onclick=()=>start(DATA);
+
+let sx=0,sy=0;
+stage.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
+stage.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+  if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.6){dx<0?pos++:pos--;render()}
+},{passive:true});
+
+document.addEventListener('keydown',e=>{
+  if(e.key===' '){e.preventDefault();flip()}
+  if(e.key==='ArrowRight'){pos++;render()}
+  if(e.key==='ArrowLeft'){pos--;render()}
+});
+
+start(DATA);
+</script>
+</body>
+</html>
