@@ -1,0 +1,15 @@
+rules_version = '2';
+
+// 每個人只能讀寫自己那一份進度。
+// 文件 ID 必須等於登入者的 uid，所以即使知道別人的 uid 也無法存取。
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /progress/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+    // 其餘一律拒絕
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

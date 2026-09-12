@@ -41,7 +41,19 @@ npx --yes serve site -l 5173      # 或：python -m http.server 5173 --directory
 
 **必須用伺服器，不能直接雙擊 `index.html`** — ES modules 與 `fetch()` 在 `file://` 下會被 CORS 擋掉。
 
-## 同步錯誤紀錄
+## 雲端同步（自動）
+
+按一次 **登入同步**（Google 帳號），之後答題進度會自動同步到 Firebase，
+手機和電腦看到的是同一筆紀錄。
+
+- 進度仍然**同時**存在瀏覽器 localStorage — 沒網路、沒登入都能照常練習
+- 上傳有 3 秒 debounce，不會每答一題就打一次網路
+- 合併採 `max()`，兩台裝置分別練過不會互相覆蓋
+- 安全性規則見 [`firestore.rules`](firestore.rules)：每個人只能讀寫自己的資料
+
+不想登入也完全可以用，只是進度僅存在該瀏覽器。
+
+## 同步錯誤紀錄到 repo（手動，選用）
 
 答題紀錄即時存在瀏覽器的 localStorage。要把它存進 repo（換裝置、或想留一份可讀的紀錄）：
 

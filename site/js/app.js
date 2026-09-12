@@ -1,4 +1,5 @@
 import * as store from './store.js';
+import * as sync from './sync.js';
 import { buildSession, grade, MODES } from './quiz.js';
 import { renderHandout } from './handout.js';
 
@@ -41,6 +42,7 @@ async function selectedWords() {
 async function seedProgress() {
   if (!store.isEmpty()) return;
   try {
+    // 尚未同步過就不會有這個檔，404 是預期內的情況
     const r = await fetch('./data/progress.md');
     if (!r.ok) return;
     const words = {};
@@ -122,8 +124,11 @@ function screenLessons() {
     title: '英文單字練習',
     count: n ? `已選 ${n} 課` : '',
     bar: `<button id="toModes" class="primary" ${n ? '' : 'disabled'}>下一步 →</button>`,
-    util: `<button id="resetBtn">清除進度</button><button id="exportBtn">匯出進度</button>`,
+    util: `<button id="syncBtn">${sync.currentUser() ? '已同步 ✓' : '登入同步'}</button>` +
+          `<button id="resetBtn">清除進度</button><button id="exportBtn">匯出進度</button>`,
   });
+
+  $('syncBtn').onclick = doSync;
 
   el.stage.querySelectorAll('[data-lesson]').forEach(b => b.onclick = () => {
     const id = b.dataset.lesson;
@@ -229,6 +234,7 @@ function answer(response) {
   const r = grade(q, response);
   s.answers[s.pos] = r;
   store.record(r.key, r.correct);
+  sync.schedulePush();
   drawTicks();
 
   if (q.choices) {
@@ -315,6 +321,28 @@ function toast(msg) {
   setTimeout(() => t.remove(), 2600);
 }
 
+async function doSync() {
+  const u = sync.currentUser();
+  if (u) {
+    // 已登入：顯示身分並提供登出
+    if (confirm(`已登入 ${u.email}\n進度會自動同步到雲端。\n\n要登出嗎？`)) {
+      await sync.signOut();
+      toast('已登出，進度仍保留在本機');
+      render();
+    }
+    return;
+  }
+  try {
+    toast('開啟 Google 登入…');
+    await sync.signIn();
+    await sync.push();          // 首次登入把本機既有進度推上雲端
+    toast('已登入，進度開始同步');
+    render();
+  } catch (e) {
+    toast('登入失敗：' + (e.code || e.message || e));
+  }
+}
+
 async function doExport() {
   const json = store.exportJSON();
   try {
@@ -353,6 +381,10 @@ document.addEventListener('keydown', e => {
   if (!q.choices && e.key === ' ') { e.preventDefault(); $('card')?.click(); }
 });
 
+// 離開頁面前補送尚未上傳的進度
+addEventListener('visibilitychange', () => { if (document.hidden) sync.flush(); });
+addEventListener('pagehide', () => sync.flush());
+
 (async function init() {
   await seedProgress();
   const r = await fetch('./data/manifest.json');
@@ -360,4 +392,8 @@ document.addEventListener('keydown', e => {
   state.screen = (location.hash.replace('#/', '') || 'lessons');
   if (!['lessons', 'modes', 'handout'].includes(state.screen)) state.screen = 'lessons';
   render();
+
+  // 雲端同步是附加層 — 失敗不影響上面已經可用的畫面
+  sync.onChange(() => { if (state.screen === 'lessons') render(); });
+  sync.init().catch(() => {});
 })();
