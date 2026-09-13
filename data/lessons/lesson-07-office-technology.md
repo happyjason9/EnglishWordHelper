@@ -1,0 +1,115 @@
+---
+id: lesson-07-office-technology
+number: 7
+topic: Office Technology
+topic_zh: 辦公室科技
+intro: 12 個辦公室科技情境高頻字。每個字附兩個例句、中譯,以及用法與衍生字提醒。
+---
+
+## 1. affordable (adj.) — 負擔得起的
+
+- a. The company's first priority was to find an affordable phone system.
+- a-zh. 公司的首要任務是找到一套負擔得起的電話系統。
+- b. Obviously, the computer systems that are affordable for a Fortune 500 company will not be affordable for a small company.
+- b-zh. 顯然,財星五百大企業負擔得起的電腦系統,小公司是負擔不起的。
+- 用法: be affordable for sb;afford 則用 can afford to V
+- 衍生: afford 負擔得起;affordability 可負擔性
+
+## 2. as needed (adv.) — 必要時
+
+- a. The courier service did not come every day, only as needed.
+- a-zh. 快遞服務並非每天都來,只在必要時才來。
+- b. The service contract states that repairs will be made as needed.
+- b-zh. 服務合約載明,維修將視需要進行。
+- 同義: as necessary、when required
+- 用法: 置於句尾,修飾整個動作的頻率
+
+## 3. capacity (n.) — 能力、生產力;容量
+
+- a. We need a room with the capacity to hold two photocopiers and shelves for paper and other supplies.
+- a-zh. 我們需要一個空間足以容納兩台影印機,以及放紙張和其他用品的架子。
+- b. The memory requirements of this software application exceed the capacity of our computers.
+- b-zh. 這個軟體應用程式的記憶體需求超出了我們電腦的容量。
+- 搭配: the capacity to V 有能力做⋯;at full capacity 滿載
+- 易混: capacity 指容納量;ability 指能力
+
+## 4. durable (adj.) — 持久的、耐用的
+
+- a. This printer is so durable that, with a little care, it will last another five years.
+- a-zh. 這台印表機非常耐用,只要稍加保養,還可以再用五年。
+- b. The phone is very durable; I've dropped it several times and it still works well.
+- b-zh. 這支手機很耐用,我摔過好幾次它還是運作良好。
+- 衍生: durability 耐用度;durable goods 耐久財
+- 同義: sturdy、strong、lasting
+
+## 5. in charge (adj.) — 負責、掌管
+
+- a. He appointed someone to be in charge of maintaining a supply of paper in the fax machine.
+- a-zh. 他指派了一個人負責維持傳真機的紙張供應。
+- b. Your computer should not be in charge of you, rather you should be in charge of your computer.
+- b-zh. 不該讓電腦掌控你,而是你該掌控你的電腦。
+- 用法: be in charge of sth 負責某事;take charge 接手掌管
+- 易混: in charge of 是負責;in the charge of 是「由⋯照管」
+
+## 6. initiative (n.) — 主動的行動、進取心;倡議、積極性
+
+- a. Employees are encouraged to take the initiative to discuss their technology needs with management.
+- a-zh. 公司鼓勵員工主動與管理層討論他們的技術需求。
+- b. Our technology initiative involves a new database that will help revolutionize our customer service.
+- b-zh. 我們的技術計畫包含一個新資料庫,將徹底革新我們的客戶服務。
+- 搭配: take the initiative 採取主動;on one's own initiative 自發地
+- 衍生: initiate 發起、開始;initial 最初的
+
+## 7. physically (adv.) — 身體上地;實體上
+
+- a. The computer screen is making her physically sick.
+- a-zh. 電腦螢幕讓她身體不適。
+- b. Physically moving your screen from one place on the desk to another can help reduce same-position-strain syndrome.
+- b-zh. 把螢幕在桌上實際移動位置,有助於減輕固定姿勢造成的勞損症候群。
+- 用法: 可指身體上,也可指「實體地」相對於數位
+- 衍生: physical 身體的、實體的;physique 體格
+
+## 8. provider (n.) — 供應者
+
+- a. The department was extremely pleased with the service they received from the phone provider.
+- a-zh. 該部門對電話供應商提供的服務非常滿意。
+- b. We need to find a new provider of supplies for our photocopier.
+- b-zh. 我們需要為影印機找一家新的耗材供應商。
+- 搭配: service provider 服務供應商;ISP 網路服務供應商
+- 衍生: provide 提供;provision 供給、條款
+
+## 9. recur (v.) — 復發、重複出現
+
+- a. The need for repairs to the photocopier recurs too often.
+- a-zh. 影印機需要維修的情況太常發生了。
+- b. The managers did not want that particular error to recur.
+- b-zh. 主管們不希望那個特定的錯誤再次發生。
+- 拼字: 重複子音:recurred、recurring
+- 衍生: recurrence 再發生;recurrent 一再發生的
+
+## 10. reduction (n.) — 減少
+
+- a. The outlet store gave a 20 percent reduction in the price of the shelves and bookcases.
+- a-zh. 暢貨中心把架子和書櫃的價格降了百分之二十。
+- b. The reduction in office staff has made it necessary to automate more job functions.
+- b-zh. 辦公室人力縮減,使得更多職務必須自動化。
+- 搭配: a reduction in sth 在⋯方面的減少
+- 衍生: reduce 減少;reduced 已調降的
+
+## 11. stay on top of (v.) — 掌握狀況
+
+- a. It's important to stay on top of supplies for the printers and reorder them before they run out.
+- a-zh. 掌握印表機耗材的狀況並在用完前補訂,是很重要的。
+- b. In this industry, you must stay on top of current developments.
+- b-zh. 在這個產業,你必須隨時掌握最新的發展。
+- 用法: 後接名詞,不接子句
+- 同義: keep track of、keep up with
+
+## 12. stock (n./v.) — 進貨、存貨;現貨、庫存
+
+- a. Please stock the shelves with a large supply of ink and paper for the printers.
+- a-zh. 請在架上備妥大量的印表機墨水和紙張。
+- b. The office's stock of toner for the photocopier was quickly running out.
+- b-zh. 辦公室的影印機碳粉庫存很快就要用完了。
+- 搭配: in stock 有現貨;out of stock 缺貨
+- 延伸: 另有「股票」之意,stock market 股市
