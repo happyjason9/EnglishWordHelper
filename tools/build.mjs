@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { parseMarkdown } from './mdfmt.mjs';
-import { resolveCloze } from './cloze.mjs';
+import { resolveCloze, variants } from './cloze.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const SRC = path.join(ROOT, 'data', 'lessons');
@@ -30,9 +30,15 @@ for (const file of files) {
       if (r) {
         // 挖空後答案不得在句中他處露出 — 例句裡同一個字出現兩次時會發生。
         // 例：「...are affordable for a Fortune 500 company will not be affordable for...」
+        // 變化形也算露出：「Our ____ satisfaction plan offers a discount to customers who...」
+        // 空格後面還有 customers，等於把答案寫在題目裡。多字片語的變化形無法可靠推算，只比對原形。
         const blanked = e.en.slice(0, r.at) + '____' + (r.suffix || '') + e.en.slice(r.at + r.cloze.length);
-        const bare = w.w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        if (new RegExp(`(^|[^A-Za-z])${bare}($|[^A-Za-z])`, 'i').test(blanked)) {
+        const forms = /\s/.test(w.w) ? [w.w] : [w.w, ...variants(w.w)];
+        const stillShown = forms.some(form => {
+          const bare = form.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          return new RegExp(`(^|[^A-Za-z])${bare}($|[^A-Za-z])`, 'i').test(blanked);
+        });
+        if (stillShown) {
           delete e.cloze; e.at = -1; e.stem = null; e.suffix = '';
           leaks.push({ lesson: lesson.id, word: w.w, letter, en: e.en });
           totalEx++;
