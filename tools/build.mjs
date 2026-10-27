@@ -63,10 +63,17 @@ for (const file of files) {
     const story = parseStory(fs.readFileSync(storyFile, 'utf8'), lesson.id + '.md');
     const nums = new Set(lesson.words.map(w => w.n));
     const used = new Set();
-    for (const p of story.paras) for (const x of p.en) {
-      if (typeof x === 'string') continue;
-      if (!nums.has(x.n)) storyErrors.push(`[${lesson.id}] {${x.t}|${x.n}} 編號不存在`);
-      used.add(x.n);
+    for (const p of story.paras) {
+      const marks = parts => parts.filter(x => typeof x !== 'string');
+      for (const x of [...marks(p.en), ...marks(p.zh)]) {
+        if (!nums.has(x.n)) storyErrors.push(`[${lesson.id}] {${x.t}|${x.n}} 編號不存在`);
+      }
+      // 中譯要標出同一段英文用到的每個字，中英才對得起來
+      const zhNums = new Set(marks(p.zh).map(x => x.n));
+      for (const x of marks(p.en)) {
+        used.add(x.n);
+        if (!zhNums.has(x.n)) storyErrors.push(`[${lesson.id}] {${x.t}|${x.n}} 的中譯段落沒有標記對應中文`);
+      }
     }
     for (const w of lesson.words) {
       if (!used.has(w.n)) storyErrors.push(`[${lesson.id}] 故事沒有用到 ${w.n}. ${w.w}`);

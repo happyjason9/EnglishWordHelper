@@ -15,7 +15,8 @@ export function renderStory(lesson, showTr) {
   const paras = s.paras.map(p => `<div class="sp">
       <p class="en">${p.en.map(x => typeof x === 'string' ? esc(x)
         : `<button type="button" class="sw" data-gloss="${esc(gloss(x))}">${esc(x.t)}</button>`).join('')}</p>
-      ${showTr ? `<p class="tr">${esc(p.zh)}</p>` : ''}</div>`).join('');
+      ${showTr ? `<p class="tr">${p.zh.map(x => typeof x === 'string' ? esc(x)
+        : `<span class="zw">${esc(x.t)}</span>`).join('')}</p>` : ''}</div>`).join('');
 
   const list = lesson.words.map(w => `<div><span class="hw-n">${String(w.n).padStart(2, '0')}</span>
       <b>${esc(w.w)}</b> <i>${esc(w.p)}</i> ${esc(w.zh)}</div>`).join('');

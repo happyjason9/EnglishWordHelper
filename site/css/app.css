@@ -225,6 +225,7 @@ button:disabled:hover{border-color:#37484F;background:linear-gradient(180deg,#27
   content:"（" attr(data-gloss) "）";
   font-family:var(--sans);font-size:.78em;color:var(--muted);
 }
+.zw{color:var(--seal);border-bottom:1.5px solid rgba(168,56,44,.45)}
 .sl{border-top:1px solid var(--rule);padding-top:14px;font-size:14px;line-height:1.9;color:#4C5B63}
 .sl b{font-family:var(--serif);font-weight:400;color:var(--text);margin-left:6px}
 .sl i{font-family:var(--serif);color:var(--muted)}

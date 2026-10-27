@@ -84,9 +84,22 @@ export function parseMarkdown(src, file) {
   return { id: meta.id, number: +meta.number, topic: meta.topic, topic_zh: meta.topic_zh, intro: meta.intro || '', words };
 }
 
+// 單字標記 {句中字面|單字編號} → [字串 | {t, n}] 陣列，網站端不必再解析標記。
+function parseMarks(text, err) {
+  const out = [];
+  let pos = 0;
+  for (const m of text.matchAll(/\{([^{}|]+)\|(\d+)\}/g)) {
+    if (m.index > pos) out.push(text.slice(pos, m.index));
+    out.push({ t: m[1], n: +m[2] });
+    pos = m.index + m[0].length;
+  }
+  if (pos < text.length) out.push(text.slice(pos));
+  if (out.some(x => typeof x === 'string' && /[{}]/.test(x))) err(`無法解析的單字標記: "${text.slice(0, 40)}…"`);
+  return out;
+}
+
 // data/stories/{lesson-id}.md：英文段落與 "> " 開頭的中譯段落交替，以空行分隔。
-// 單字標記 {句中字面|單字編號}，例：{took part in|12}。
-// 段落 en 解析為 [字串 | {t, n}] 陣列，網站端不必再解析標記。
+// 英文與中譯都用 {字面|單字編號} 標記，例：{took part in|12}、{參與|12}。
 export function parseStory(src, file) {
   const err = m => { throw new Error(`${file}: ${m}`); };
   const fmMatch = src.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/);
@@ -107,22 +120,12 @@ export function parseStory(src, file) {
     if (lines[0].startsWith('>')) {
       const last = paras[paras.length - 1];
       if (!last || last.zh) err(`中譯段落前面沒有對應的英文段落: "${lines[0]}"`);
-      last.zh = lines.map(l => l.replace(/^>\s?/, '')).join('');
+      last.zh = parseMarks(lines.map(l => l.replace(/^>\s?/, '')).join(''), err);
       continue;
     }
     const prev = paras[paras.length - 1];
     if (prev && !prev.zh) err(`英文段落缺少中譯: "${lines[0].slice(0, 40)}…"`);
-    const text = lines.join(' ');
-    const en = [];
-    let pos = 0;
-    for (const m of text.matchAll(/\{([^{}|]+)\|(\d+)\}/g)) {
-      if (m.index > pos) en.push(text.slice(pos, m.index));
-      en.push({ t: m[1], n: +m[2] });
-      pos = m.index + m[0].length;
-    }
-    if (pos < text.length) en.push(text.slice(pos));
-    if (en.some(x => typeof x === 'string' && /[{}]/.test(x))) err(`無法解析的單字標記: "${text.slice(0, 40)}…"`);
-    paras.push({ en });
+    paras.push({ en: parseMarks(lines.join(' '), err) });
   }
   if (!paras.length) err('沒有任何段落');
   if (!paras[paras.length - 1].zh) err('最後一段英文缺少中譯');
