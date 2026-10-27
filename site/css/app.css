@@ -211,7 +211,9 @@ button:disabled:hover{border-color:#37484F;background:linear-gradient(180deg,#27
 .story .st{font-family:var(--serif);font-size:22px;margin:14px 0 18px}
 .story .st small{display:block;font-size:14px;color:var(--muted);margin-top:4px}
 .sp{margin-bottom:18px}
-.sp .en{font-family:var(--serif);font-size:18px;line-height:1.8;max-width:64ch}
+/* 左右對齊；英文開斷字，避免窄螢幕上字距被拉得太開 */
+.sp .en,.sp .tr{text-align:justify}
+.sp .en{font-family:var(--serif);font-size:18px;line-height:1.8;hyphens:auto;-webkit-hyphens:auto}
 .sp .tr{font-size:14.5px;line-height:1.8;color:#4C5B63;margin-top:6px}
 /* 單字標記：重設全域 button 樣式，讓它像句中的一個字 */
 .sw{

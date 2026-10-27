@@ -13,7 +13,7 @@ export function renderStory(lesson, showTr) {
     return x.t.toLowerCase() === w.w.toLowerCase() ? w.zh : `${w.w}：${w.zh}`;
   };
   const paras = s.paras.map(p => `<div class="sp">
-      <p class="en">${p.en.map(x => typeof x === 'string' ? esc(x)
+      <p class="en" lang="en">${p.en.map(x => typeof x === 'string' ? esc(x)
         : `<button type="button" class="sw" data-gloss="${esc(gloss(x))}">${esc(x.t)}</button>`).join('')}</p>
       ${showTr ? `<p class="tr">${p.zh.map(x => typeof x === 'string' ? esc(x)
         : `<span class="zw">${esc(x.t)}</span>`).join('')}</p>` : ''}</div>`).join('');
