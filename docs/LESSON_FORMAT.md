@@ -91,12 +91,32 @@ intro: 12 個保固情境高頻字。每個字附兩個例句、中譯,以及用
   [lesson-05-conferences] take part in 例句 a: Over 100 companies took part in…
 ```
 
+## 故事（選配）：`data/stories/<課程 id>.md`
+
+用該課全部單字寫成的短篇故事，顯示在網站的「故事模式」。檔名必須與課程 `id` 相同。
+
+```markdown
+---
+title: The Tea Conference
+title_zh: 茶業研討會
+---
+
+Mia was brave and {took part in|12} the discussion.
+
+> 米雅鼓起勇氣參與了討論。
+```
+
+- 英文段落與 `>` 開頭的中譯段落交替，以空行分隔；每段英文都**必須**有中譯
+- 單字標記 `{句中字面|單字編號}` — 字面寫句中實際出現的形式（`{considered|3}`），網站點開時會一併顯示原形
+- 該課**每個單字至少標記一次**，否則建置失敗
+
 ## 新增一課的流程
 
 1. 拍照，請 Claude 依本規範轉寫成 `data/lessons/lesson-NN-<slug>.md`
 2. 對著照片核對一遍（這個格式就是為了方便逐行核對而設計的）
-3. `node tools/build.mjs` — 確認字數正確、填空無錯誤
-4. `git add -A && git commit -m "feat: add lesson N" && git push`
+3. 請 Claude 用該課單字寫成 `data/stories/lesson-NN-<slug>.md`（選配）
+4. `node tools/build.mjs` — 確認字數正確、填空無錯誤
+5. `git add -A && git commit -m "feat: add lesson N" && git push`
 
 推上去後 Pages Action 會自動重新建置部署。
 
@@ -108,5 +128,6 @@ intro: 12 個保固情境高頻字。每個字附兩個例句、中譯,以及用
 - 有單字但沒有任何例句
 - 無法解析的行（打錯前綴時）
 - 填空無法解析且未給 `a-cloze:`
+- 故事漏用單字、標記編號不存在、段落缺中譯、檔名對不上任何課程
 
 任一項發生，建置以非零碼結束，Pages 不會部署到壞掉的版本。

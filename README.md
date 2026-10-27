@@ -12,6 +12,7 @@
 - **例句填空** — 從例句挖空選出正確單字，附中譯提示
 - **翻卡自評** — 翻開卡片自評「記得 / 不記得」
 - **講義模式** — 完整單字表，可直接列印或存成 PDF
+- **故事模式** — 用整課 12 個單字串成的簡單短篇故事（25 課是同一條故事線），點單字看意思，可切換中譯
 
 答錯的字會累計次數，下次測驗時**權重排序**讓錯多的字排前面 —
 但所有字仍然都會出現，不會漏練。
@@ -21,7 +22,8 @@
 1. 拍下課本頁面，交給 Claude，說「加成 Lesson 6」
 2. Claude 依 [`docs/LESSON_FORMAT.md`](docs/LESSON_FORMAT.md) 寫成 `data/lessons/lesson-06-<slug>.md`
 3. 對著照片核對一遍
-4. 建置並推送：
+4. （選配）請 Claude 用該課單字寫一篇故事到 `data/stories/`，格式同上文件
+5. 建置並推送：
 
 ```bash
 node tools/build.mjs
@@ -74,6 +76,7 @@ npx --yes serve site -l 5173      # 或：python -m http.server 5173 --directory
 
 ```
 data/lessons/*.md     課程資料（真實來源，手改這裡）
+data/stories/*.md     各課故事（選配，檔名同課程 id）
 data/progress.md      錯誤紀錄（Action 寫入）
 tools/build.mjs       .md → site/data/*.json，同時是驗證關卡
 site/                 GitHub Pages 發布的目錄
@@ -88,5 +91,6 @@ archive/              原始的 docx / html / pdf，保留備查
 
 - front matter 缺欄位、標題格式不符、例句缺中譯
 - **例句填空無法解析** — 會明確指出是哪一課哪個字，並要求加 `a-cloze:` 一行
+- 故事漏用了該課某個單字
 
 最後一項是刻意設計的：填空必須在建置期確定，否則會變成手機上一題默默壞掉的測驗。

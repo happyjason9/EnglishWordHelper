@@ -2,12 +2,13 @@
 // 同時是驗證關卡：填空無法解析即以非零碼結束，讓壞掉的題目不會默默上線。
 import fs from 'node:fs';
 import path from 'node:path';
-import { parseMarkdown } from './mdfmt.mjs';
+import { parseMarkdown, parseStory } from './mdfmt.mjs';
 import { resolveCloze, variants } from './cloze.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const SRC = path.join(ROOT, 'data', 'lessons');
 const OUT = path.join(ROOT, 'site', 'data');
+const STORIES = path.join(ROOT, 'data', 'stories');
 
 fs.mkdirSync(OUT, { recursive: true });
 for (const f of fs.readdirSync(OUT)) if (f.endsWith('.json')) fs.unlinkSync(path.join(OUT, f));
@@ -16,7 +17,8 @@ const files = fs.readdirSync(SRC).filter(f => f.endsWith('.md')).sort();
 const manifest = [];
 const failures = [];
 const leaks = [];
-let totalWords = 0, totalEx = 0, clozeable = 0;
+const storyErrors = [];
+let totalWords = 0, totalEx = 0, clozeable = 0, stories = 0;
 
 for (const file of files) {
   const lesson = parseMarkdown(fs.readFileSync(path.join(SRC, file), 'utf8'), file);
@@ -55,6 +57,24 @@ for (const file of files) {
     totalWords++;
   }
 
+  // 故事是選配的；有的話每個單字都必須至少標記一次，否則就失去「用全部單字」的意義
+  const storyFile = path.join(STORIES, lesson.id + '.md');
+  if (fs.existsSync(storyFile)) {
+    const story = parseStory(fs.readFileSync(storyFile, 'utf8'), lesson.id + '.md');
+    const nums = new Set(lesson.words.map(w => w.n));
+    const used = new Set();
+    for (const p of story.paras) for (const x of p.en) {
+      if (typeof x === 'string') continue;
+      if (!nums.has(x.n)) storyErrors.push(`[${lesson.id}] {${x.t}|${x.n}} 編號不存在`);
+      used.add(x.n);
+    }
+    for (const w of lesson.words) {
+      if (!used.has(w.n)) storyErrors.push(`[${lesson.id}] 故事沒有用到 ${w.n}. ${w.w}`);
+    }
+    lesson.story = story;
+    stories++;
+  }
+
   fs.writeFileSync(path.join(OUT, lesson.id + '.json'), JSON.stringify(lesson), 'utf8');
   manifest.push({
     id: lesson.id, number: lesson.number,
@@ -75,6 +95,20 @@ if (fs.existsSync(prog)) {
 
 console.log(`建置完成：${manifest.length} 課, ${totalWords} 字, ${totalEx} 例句`);
 console.log(`填空可用：${clozeable}/${totalEx}`);
+console.log(`故事：${stories}/${manifest.length} 課`);
+
+// 檔名對不上任何課程的故事會被默默略過，必須擋下
+if (fs.existsSync(STORIES)) {
+  const ids = new Set(manifest.map(l => l.id));
+  for (const f of fs.readdirSync(STORIES)) {
+    if (f.endsWith('.md') && !ids.has(f.slice(0, -3))) storyErrors.push(`data/stories/${f} 沒有對應的課程`);
+  }
+}
+if (storyErrors.length) {
+  console.error(`\n✗ 故事檢查失敗：`);
+  storyErrors.forEach(s => console.error('  ' + s));
+  process.exit(1);
+}
 
 // 同一個字在例句中出現兩次：挖掉一個、另一個仍露出答案。
 // 這是課本原文使然，無法靠改 .md 修正，因此排除該例句而非中斷建置。

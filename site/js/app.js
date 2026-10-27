@@ -2,6 +2,7 @@ import * as store from './store.js';
 import * as sync from './sync.js';
 import { buildSession, grade, MODES } from './quiz.js';
 import { renderHandout } from './handout.js';
+import { renderStory } from './story.js';
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const $ = id => document.getElementById(id);
@@ -159,11 +160,14 @@ function screenModes() {
     <button class="opt" data-mode="handout" style="margin-top:14px">
       <span><span class="t">講義模式</span><span class="d">完整單字表，可直接列印或存成 PDF</span></span>
     </button>
+    <button class="opt" data-mode="story">
+      <span><span class="t">故事模式</span><span class="d">用整課單字串成的短篇故事，點單字看意思</span></span>
+    </button>
   </div>`;
   setChrome({ title: '英文單字練習', bar: `<button id="back">← 返回選課</button>` });
   el.stage.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => {
     state.mode = b.dataset.mode;
-    b.dataset.mode === 'handout' ? go('handout') : startSession();
+    ['handout', 'story'].includes(b.dataset.mode) ? go(b.dataset.mode) : startSession();
   });
   $('back').onclick = () => go('lessons');
 }
@@ -311,6 +315,23 @@ async function screenHandout() {
   $('trBtn').onclick = () => { state.showTr = !state.showTr; render(); };
 }
 
+async function screenStory() {
+  if (!state.selected.size) return go('lessons');
+  const ids = [...state.selected].sort();
+  const ls = await Promise.all(ids.map(loadLesson));
+  el.stage.innerHTML = `<div class="panel">${ls.map(l => renderStory(l, state.showTr)).join('')}</div>`;
+  setChrome({
+    title: '故事模式',
+    count: `${ls.length} 課`,
+    bar: `<button id="back">← 返回</button><button id="print" class="primary">列印 / 存 PDF</button>`,
+    util: `<button id="trBtn">${state.showTr ? '隱藏中譯' : '顯示中譯'}</button>`,
+  });
+  el.stage.querySelectorAll('.sw').forEach(b => b.onclick = () => b.classList.toggle('open'));
+  $('back').onclick = () => go('modes');
+  $('print').onclick = () => window.print();
+  $('trBtn').onclick = () => { state.showTr = !state.showTr; render(); };
+}
+
 /* ---------- 匯出 ---------- */
 
 function toast(msg) {
@@ -367,6 +388,7 @@ function render() {
     study: screenStudy,
     results: screenResults,
     handout: screenHandout,
+    story: screenStory,
   }[state.screen] || screenLessons)();
 }
 
@@ -390,7 +412,7 @@ addEventListener('pagehide', () => sync.flush());
   const r = await fetch('./data/manifest.json');
   state.lessons = (await r.json()).lessons;
   state.screen = (location.hash.replace('#/', '') || 'lessons');
-  if (!['lessons', 'modes', 'handout'].includes(state.screen)) state.screen = 'lessons';
+  if (!['lessons', 'modes', 'handout', 'story'].includes(state.screen)) state.screen = 'lessons';
   render();
 
   // 雲端同步是附加層 — 失敗不影響上面已經可用的畫面

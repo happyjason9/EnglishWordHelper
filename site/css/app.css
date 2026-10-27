@@ -207,6 +207,27 @@ button:disabled:hover{border-color:#37484F;background:linear-gradient(180deg,#27
 .hw-w{font-family:var(--serif);font-size:26px}
 .hw-p{font-family:var(--serif);font-style:italic;color:var(--muted);font-size:15px}
 .hw-zh{font-family:var(--serif);font-size:19px;margin:6px 0 12px}
+/* 故事模式：沿用講義的紙張外框 */
+.story .st{font-family:var(--serif);font-size:22px;margin:14px 0 18px}
+.story .st small{display:block;font-size:14px;color:var(--muted);margin-top:4px}
+.sp{margin-bottom:18px}
+.sp .en{font-family:var(--serif);font-size:18px;line-height:1.8;max-width:64ch}
+.sp .tr{font-size:14.5px;line-height:1.8;color:#4C5B63;margin-top:6px}
+/* 單字標記：重設全域 button 樣式，讓它像句中的一個字 */
+.sw{
+  flex:none;display:inline;font:inherit;color:var(--seal);
+  background:none;border:0;border-bottom:1.5px solid rgba(168,56,44,.45);border-radius:0;
+  padding:0;cursor:pointer;transition:none;
+}
+.sw:hover{background:rgba(168,56,44,.08);border-color:var(--seal)}
+.sw:active{transform:none}
+.sw.open::after{
+  content:"（" attr(data-gloss) "）";
+  font-family:var(--sans);font-size:.78em;color:var(--muted);
+}
+.sl{border-top:1px solid var(--rule);padding-top:14px;font-size:14px;line-height:1.9;color:#4C5B63}
+.sl b{font-family:var(--serif);font-weight:400;color:var(--text);margin-left:6px}
+.sl i{font-family:var(--serif);color:var(--muted)}
 .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);
   background:var(--paper);color:var(--text);padding:12px 20px;border-radius:4px;
   font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:9}

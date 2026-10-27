@@ -83,3 +83,49 @@ export function parseMarkdown(src, file) {
 
   return { id: meta.id, number: +meta.number, topic: meta.topic, topic_zh: meta.topic_zh, intro: meta.intro || '', words };
 }
+
+// data/stories/{lesson-id}.md：英文段落與 "> " 開頭的中譯段落交替，以空行分隔。
+// 單字標記 {句中字面|單字編號}，例：{took part in|12}。
+// 段落 en 解析為 [字串 | {t, n}] 陣列，網站端不必再解析標記。
+export function parseStory(src, file) {
+  const err = m => { throw new Error(`${file}: ${m}`); };
+  const fmMatch = src.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/);
+  if (!fmMatch) err('缺少 YAML front matter');
+  const meta = {};
+  for (const line of fmMatch[1].split(/\r?\n/)) {
+    const m = line.match(/^([a-z_]+):\s*(.*)$/);
+    if (m) meta[m[1]] = m[2].trim();
+  }
+  for (const k of ['title', 'title_zh']) {
+    if (!meta[k]) err(`front matter 缺少 ${k}`);
+  }
+
+  const paras = [];
+  const blocks = src.slice(fmMatch[0].length).split(/\r?\n\s*\r?\n/).map(b => b.trim()).filter(Boolean);
+  for (const block of blocks) {
+    const lines = block.split(/\r?\n/).map(l => l.trim());
+    if (lines[0].startsWith('>')) {
+      const last = paras[paras.length - 1];
+      if (!last || last.zh) err(`中譯段落前面沒有對應的英文段落: "${lines[0]}"`);
+      last.zh = lines.map(l => l.replace(/^>\s?/, '')).join('');
+      continue;
+    }
+    const prev = paras[paras.length - 1];
+    if (prev && !prev.zh) err(`英文段落缺少中譯: "${lines[0].slice(0, 40)}…"`);
+    const text = lines.join(' ');
+    const en = [];
+    let pos = 0;
+    for (const m of text.matchAll(/\{([^{}|]+)\|(\d+)\}/g)) {
+      if (m.index > pos) en.push(text.slice(pos, m.index));
+      en.push({ t: m[1], n: +m[2] });
+      pos = m.index + m[0].length;
+    }
+    if (pos < text.length) en.push(text.slice(pos));
+    if (en.some(x => typeof x === 'string' && /[{}]/.test(x))) err(`無法解析的單字標記: "${text.slice(0, 40)}…"`);
+    paras.push({ en });
+  }
+  if (!paras.length) err('沒有任何段落');
+  if (!paras[paras.length - 1].zh) err('最後一段英文缺少中譯');
+
+  return { title: meta.title, title_zh: meta.title_zh, paras };
+}
